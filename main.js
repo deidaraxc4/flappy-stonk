@@ -13,13 +13,15 @@ const game = new Phaser.Game(config);
 
 // first hook
 function preload () {
-    console.log("preloading")
+    console.log("preloading");
+    this.load.image('rocket', 'assets/rocket.png');
 };
 
 
 // second hook
 function create() {
-    console.log("create")
+    console.log("create");
+    this.add.image(300,300,'rocket');
 };
 
 // This method is called once per game step while the scene is running.
