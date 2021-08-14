@@ -6,25 +6,42 @@ const config = {
         preload: preload,
         create: create,
         update: update,
+    },
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: { y: 300 },
+            debug: true
+        }
     }
 };
 
 const game = new Phaser.Game(config);
 
+let rocket;
+
 // first hook
 function preload () {
     console.log("preloading");
-    this.load.image('rocket', 'assets/rocket.png');
+    this.load.image('rocket', 'assets/rockets.png');
 };
 
 
 // second hook
 function create() {
     console.log("create");
-    this.add.image(300,300,'rocket');
+    rocket = this.physics.add.image(100,300,'rocket');
+    rocket.setScale(0.15, 0.15);
+
+    rocket.setCollideWorldBounds(true);
+
+    spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 };
 
 // This method is called once per game step while the scene is running.
 function update() {
-    // console.log("updating")
+    if(Phaser.Input.Keyboard.JustDown(spacebar)) {
+        console.log("im spacebar")
+        rocket.setVelocityY(-300)
+    }
 };
