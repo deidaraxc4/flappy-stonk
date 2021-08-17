@@ -52,12 +52,13 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    // scene: {
-    //     preload: preload,
-    //     create: create,
-    //     update: update,
-    // },
-    scene: [ MenuScene, MainScene ],
+    scene: {
+        init: init,
+        preload: preload,
+        create: create,
+        update: update,
+    },
+    // scene: [ MenuScene, MainScene ],
     physics: {
         default: 'arcade',
         arcade: {
@@ -68,19 +69,39 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+let pipes;
 
 let rocket;
 
-function preload () {
+function init() {
+    console.log("init");
+    this.registry.set("score",-1)
+}
+
+function preload() {
     console.log("preloading");
     this.load.image('rocket', 'assets/rockets.png');
     this.load.image('greenBox', 'assets/GreenBox.png');
 };
 
+function addPipe(scene, x, y) {
+    pipes.add(new Pipe({scene: scene, x: x, y: y, key: "greenBox"}));
+    console.log("here!")
+    // pipes.create(x,y,"greenBox")
+}
+
+function addNewRowOfPipes() {
+    // update score
+    this.registry.values.score += 1;
+}
 
 function create() {
     console.log("create");
     rocket = this.physics.add.image(100,300,'rocket');
+    pipes = this.add.group({ classType: Pipe });
+    addPipe(this,800,60)
+    // pipes.add(new Pipe({scene: this, x: 800, y: 60, key: "greenBox"}));
+    // pipes = this.physics.add.group();
     rocket.setScale(0.15, 0.15);
 
     rocket.setCollideWorldBounds(true);
