@@ -47,17 +47,70 @@ class MainScene extends Phaser.Scene {
 }
 
 
+class GameScene extends Phaser.Scene {
+    rocket;
+    pipes;
+    spacebar;
+
+    constructor() {
+        super("GameScene");
+    }
+
+    init() {
+        console.log("init");
+        this.registry.set("score",-1)
+    }
+
+    preload() {
+        console.log("preloading");
+        this.load.image('rocket', 'assets/rockets.png');
+        this.load.image('greenBox', 'assets/GreenBox.png');
+    }
+
+    create() {
+        console.log("create");
+        this.rocket = this.physics.add.image(100,300,'rocket');
+        this.pipes = this.add.group({ classType: Pipe });
+        this.#addPipe(800,80);
+        this.rocket.setScale(0.15, 0.15);
+    
+        this.rocket.setCollideWorldBounds(true);
+    
+        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    }
+
+    update() {
+        if(Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+            console.log("im spacebar");
+            this.rocket.setVelocityY(-300);
+        }
+    }
+
+    #addPipe(x, y) {
+        this.pipes.add(new Pipe({scene: this, x: x, y: y, key: "greenBox"}));
+    }
+
+    #addNewRowOfPipes() {
+        // update score
+        this.registry.values.score += 1;
+    }
+}
+
+
+const gameScene = new GameScene();
+
 
 const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    scene: {
-        init: init,
-        preload: preload,
-        create: create,
-        update: update,
-    },
+    scene: [ GameScene ],
+    // scene: {
+    //     init: init,
+    //     preload: preload,
+    //     create: create,
+    //     update: update,
+    // },
     // scene: [ MenuScene, MainScene ],
     physics: {
         default: 'arcade',
@@ -72,7 +125,7 @@ const game = new Phaser.Game(config);
 let pipes;
 
 let rocket;
-
+//TODO convert all this to a class scene
 function init() {
     console.log("init");
     this.registry.set("score",-1)
