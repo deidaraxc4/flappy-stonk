@@ -51,6 +51,7 @@ class GameScene extends Phaser.Scene {
     rocket;
     pipes;
     spacebar;
+    accountValueText;
 
     constructor() {
         super("GameScene");
@@ -71,12 +72,26 @@ class GameScene extends Phaser.Scene {
         console.log("create");
         this.rocket = this.physics.add.image(100,300,'rocket');
         this.pipes = this.add.group({ classType: Pipe });
-        this.#addPipe(800,80);
+        this.accountValueText = this.add.text(330, 15, "Account Value $0")
         this.rocket.setScale(0.15, 0.15);
     
         this.rocket.setCollideWorldBounds(true);
     
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        this.time.addEvent({
+            delay: 1600,
+            callback: this.#addNewRowOfPipes,
+            callbackScope: this,
+            loop: true,
+        });
+
+        this.time.addEvent({
+            delay: 10,
+            callback: this.#updateScore,
+            callbackScope: this,
+            loop: true,
+        });
     }
 
     update() {
@@ -91,8 +106,24 @@ class GameScene extends Phaser.Scene {
     }
 
     #addNewRowOfPipes() {
-        // update score
+        let hole = Math.floor(Math.random() * 5) + 1;
+
+        for (let i = 0; i < 13; i++) {
+            if (i !== hole && i !== hole + 1 && i !== hole + 2) {
+              if (i === hole - 1) {
+                this.#addPipe(800, i * 50, 0);
+              } else if (i === hole + 3) {
+                this.#addPipe(800, i * 50, 1);
+              } else {
+                this.#addPipe(800, i * 50, 2);
+              }
+            }
+          }
+    }
+
+    #updateScore() {
         this.registry.values.score += 1;
+        this.accountValueText.setText(`Account Value $${this.registry.values.score}`);
     }
 }
 
@@ -105,67 +136,13 @@ const config = {
     width: 800,
     height: 600,
     scene: [ GameScene ],
-    // scene: {
-    //     init: init,
-    //     preload: preload,
-    //     create: create,
-    //     update: update,
-    // },
-    // scene: [ MenuScene, MainScene ],
     physics: {
         default: 'arcade',
         arcade: {
             gravity: { y: 300 },
-            debug: true
+            debug: false
         }
     }
 };
 
 const game = new Phaser.Game(config);
-let pipes;
-
-let rocket;
-//TODO convert all this to a class scene
-function init() {
-    console.log("init");
-    this.registry.set("score",-1)
-}
-
-function preload() {
-    console.log("preloading");
-    this.load.image('rocket', 'assets/rockets.png');
-    this.load.image('greenBox', 'assets/GreenBox.png');
-};
-
-function addPipe(scene, x, y) {
-    pipes.add(new Pipe({scene: scene, x: x, y: y, key: "greenBox"}));
-    console.log("here!")
-    // pipes.create(x,y,"greenBox")
-}
-
-function addNewRowOfPipes() {
-    // update score
-    this.registry.values.score += 1;
-}
-
-function create() {
-    console.log("create");
-    rocket = this.physics.add.image(100,300,'rocket');
-    pipes = this.add.group({ classType: Pipe });
-    addPipe(this,800,60)
-    // pipes.add(new Pipe({scene: this, x: 800, y: 60, key: "greenBox"}));
-    // pipes = this.physics.add.group();
-    rocket.setScale(0.15, 0.15);
-
-    rocket.setCollideWorldBounds(true);
-
-    spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
-};
-
-
-function update() {
-    if(Phaser.Input.Keyboard.JustDown(spacebar)) {
-        console.log("im spacebar");
-        rocket.setVelocityY(-300);
-    }
-};
