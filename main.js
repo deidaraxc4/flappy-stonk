@@ -72,13 +72,16 @@ class GameScene extends Phaser.Scene {
         console.log("create");
         this.rocket = this.physics.add.image(100,300,'rocket');
         this.pipes = this.add.group({ classType: Pipe });
-        this.accountValueText = this.add.text(330, 15, "Account Value $0")
-        this.rocket.setScale(0.15, 0.15);
-    
-        this.rocket.setCollideWorldBounds(true);
-    
+        this.accountValueText = this.add.text(330, 15, "Account Value $0");
+        this.accountValueText.setDepth(1);
         this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
+        this.rocket.setScale(0.15, 0.15);
+        this.rocket.body.setGravityY(500);
+        this.rocket.setCollideWorldBounds(true);
+    
+
+        // event loops
         this.time.addEvent({
             delay: 1600,
             callback: this.#addNewRowOfPipes,
@@ -87,7 +90,7 @@ class GameScene extends Phaser.Scene {
         });
 
         this.time.addEvent({
-            delay: 10,
+            delay: 1,
             callback: this.#updateScore,
             callbackScope: this,
             loop: true,
@@ -97,8 +100,14 @@ class GameScene extends Phaser.Scene {
     update() {
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)) {
             console.log("im spacebar");
-            this.rocket.setVelocityY(-300);
+            this.rocket.setVelocityY(-250);
         }
+
+        // game over
+        this.physics.overlap(this.rocket, this.pipes, () => {
+            console.log("touched pipe, dead")
+            this.scene.pause();
+        }, null, this);
     }
 
     #addPipe(x, y) {
@@ -106,7 +115,7 @@ class GameScene extends Phaser.Scene {
     }
 
     #addNewRowOfPipes() {
-        let hole = Math.floor(Math.random() * 5) + 1;
+        let hole = Math.floor(Math.random() * 7) + 1;
 
         for (let i = 0; i < 13; i++) {
             if (i !== hole && i !== hole + 1 && i !== hole + 2) {
@@ -118,11 +127,11 @@ class GameScene extends Phaser.Scene {
                 this.#addPipe(800, i * 50, 2);
               }
             }
-          }
+        }
     }
 
     #updateScore() {
-        this.registry.values.score += 1;
+        this.registry.values.score += 10;
         this.accountValueText.setText(`Account Value $${this.registry.values.score}`);
     }
 }
