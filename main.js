@@ -4,31 +4,34 @@ class MenuScene extends Phaser.Scene {
     }
 
     preload () {
-        console.log("preloading in menu scene")
+
     }
 
     create() {
-        this.add.text(350, 300, "hello from menu")
-        const rect = new Phaser.Geom.Rectangle(300,200,80,40)
-        const graphics = this.add.graphics({ fillStyle: { color: 0x0000ff } });
+        const clickText = this.add.text(350, 200, "Click 👆", { fontSize: '24px' });
+        const startText = this.add.text(350, 330, "Start Game", { fontSize: '24px' });
+
+        startText.setDepth(1);
+        const rect = new Phaser.Geom.Rectangle(320,300,200,100)
+        const graphics = this.add.graphics({ fillStyle: { color: 0x139612 } });
         graphics.fillRectShape(rect)
 
         this.input.on('pointerdown', (pointer) => {
             if(rect.contains(pointer.x, pointer.y)) {
                 console.log('rect clicked')
-                this.scene.start('MainScene')
+                this.scene.start('GameScene')
             }
         })
     }
 }
 
-class MainScene extends Phaser.Scene {
+class GameOverScene extends Phaser.Scene {
     constructor () {
-        super("MainScene");
+        super("GameOverScene");
     }
 
     preload () {
-        console.log("preloading in main scene")
+
     }
 
     create() {
@@ -40,7 +43,7 @@ class MainScene extends Phaser.Scene {
         this.input.on('pointerdown', (pointer) => {
             if(rect.contains(pointer.x, pointer.y)) {
                 console.log('rect clicked')
-                this.scene.start('MenuScene')
+                this.scene.start('GameScene')
             }
         })
     }
@@ -144,7 +147,7 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    scene: [ GameScene ],
+    scene: [ MenuScene, GameScene ],
     physics: {
         default: 'arcade',
         arcade: {
