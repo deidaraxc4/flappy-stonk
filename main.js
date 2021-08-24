@@ -25,6 +25,8 @@ class MenuScene extends Phaser.Scene {
     }
 }
 
+const Quotes = ["Diamond hands!", "To the moon!", "Apes strong", "HODL", "brrr", "buy the dip", "Stonks only go up", "buy", "Gamestonk", "Power to the players"];
+
 class GameOverScene extends Phaser.Scene {
     constructor () {
         super("GameOverScene");
@@ -82,7 +84,19 @@ class GameScene extends Phaser.Scene {
         this.rocket.setScale(0.15, 0.15);
         this.rocket.body.setGravityY(500);
         this.rocket.setCollideWorldBounds(true);
-    
+
+        this.input.on('pointerdown', (pointer) => {
+            this.rocket.setVelocityY(-250);
+            let randomText = Quotes[Math.floor(Math.random() * Quotes.length)];
+            let txt = this.add.text(pointer.x, pointer.y, randomText);
+            this.tweens.add({
+                targets: txt,
+                alpha: 0,
+                repeat: 0,
+                duration: 800,
+                ease: 'Linear',
+            });
+        });
 
         // event loops
         this.time.addEvent({
@@ -102,7 +116,6 @@ class GameScene extends Phaser.Scene {
 
     update() {
         if(Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-            console.log("im spacebar");
             this.rocket.setVelocityY(-250);
         }
 
