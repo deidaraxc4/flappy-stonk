@@ -1,3 +1,6 @@
+const Quotes = ["Diamond hands!", "To the moon!", "Apes strong", "HODL", "brrr", "buy the dip", "Stonks only go up", "buy", "Gamestonk", "Power to the players"];
+
+
 class MenuScene extends Phaser.Scene {
     constructor () {
         super("MenuScene");
@@ -25,11 +28,15 @@ class MenuScene extends Phaser.Scene {
     }
 }
 
-const Quotes = ["Diamond hands!", "To the moon!", "Apes strong", "HODL", "brrr", "buy the dip", "Stonks only go up", "buy", "Gamestonk", "Power to the players"];
-
 class GameOverScene extends Phaser.Scene {
+    finalScore;
+
     constructor () {
         super("GameOverScene");
+    }
+
+    init(data) {
+        this.finalScore = data.finalScore;
     }
 
     preload () {
@@ -37,17 +44,20 @@ class GameOverScene extends Phaser.Scene {
     }
 
     create() {
-        this.add.text(350, 300, "hello from main")
-        const rect = new Phaser.Geom.Rectangle(300,200,80,40)
-        const graphics = this.add.graphics({ fillStyle: { color: 0xFF0000 } });
-        graphics.fillRectShape(rect)
+        const clickText = this.add.text(300, 200, `Final Score: $${this.finalScore}`, { fontSize: '24px' });
+        const startText = this.add.text(350, 330, "Restart Game", { fontSize: '24px' });
+
+        startText.setDepth(1);
+        const rect = new Phaser.Geom.Rectangle(320,300,250,100);
+        const graphics = this.add.graphics({ fillStyle: { color: 0x139612 } });
+        graphics.fillRectShape(rect);
 
         this.input.on('pointerdown', (pointer) => {
             if(rect.contains(pointer.x, pointer.y)) {
                 console.log('rect clicked')
                 this.scene.start('GameScene')
             }
-        })
+        });
     }
 }
 
@@ -121,8 +131,7 @@ class GameScene extends Phaser.Scene {
 
         // game over
         this.physics.overlap(this.rocket, this.pipes, () => {
-            console.log("touched pipe, dead")
-            this.scene.pause();
+            this.scene.start("GameOverScene", {"finalScore": this.registry.values.score})
         }, null, this);
     }
 
@@ -160,7 +169,7 @@ const config = {
     type: Phaser.AUTO,
     width: 800,
     height: 600,
-    scene: [ MenuScene, GameScene ],
+    scene: [ MenuScene, GameScene, GameOverScene ],
     physics: {
         default: 'arcade',
         arcade: {
