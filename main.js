@@ -7,12 +7,13 @@ class MenuScene extends Phaser.Scene {
     }
 
     preload () {
-
+        this.load.audio('tendieman', 'assets/tendieman.mp3');
     }
 
     create() {
         const clickText = this.add.text(350, 200, "Click 👆", { fontSize: '24px' });
         const startText = this.add.text(350, 330, "Start Game", { fontSize: '24px' });
+        let music = this.sound.add("tendieman", { loop: true });
 
         startText.setDepth(1);
         const rect = new Phaser.Geom.Rectangle(320,300,200,100)
@@ -21,7 +22,7 @@ class MenuScene extends Phaser.Scene {
 
         this.input.on('pointerdown', (pointer) => {
             if(rect.contains(pointer.x, pointer.y)) {
-                console.log('rect clicked')
+                music.play();
                 this.scene.start('GameScene')
             }
         })
@@ -54,8 +55,7 @@ class GameOverScene extends Phaser.Scene {
 
         this.input.on('pointerdown', (pointer) => {
             if(rect.contains(pointer.x, pointer.y)) {
-                console.log('rect clicked')
-                this.scene.start('GameScene')
+                this.scene.start('GameScene');
             }
         });
     }
